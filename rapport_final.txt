@@ -1,0 +1,136 @@
+=================================================================
+  RAPPORT DE MAINTENANCE PRÉDICTIVE — IA/ML
+  Généré le : 18/02/2026 11:08
+=================================================================
+
+1. RÉSUMÉ EXÉCUTIF
+----------------------------------------
+  Moteurs surveillés        : 21
+  Période analysée          : 2025-04-08 07:00:00 → 2025-05-26 15:32:28
+  Mesures totales           : 32,810
+  Anomalies détectées       : 3,281 (10.0%)
+
+  Distribution des risques :
+    ÉLEVÉ      :  2 moteur(s)  ██
+    MODÉRÉ     :  3 moteur(s)  ███
+    FAIBLE     : 16 moteur(s)  ████████████████
+
+2. ALERTES PRIORITAIRES
+----------------------------------------
+  Moteur  5  |  Risque : ÉLEVÉ       |  DI : 0.623  |  RUL estimé : >90 jours
+    → Planifier une intervention dans les 7 jours. Surveillance renforcée.
+
+  Moteur 21  |  Risque : ÉLEVÉ       |  DI : 0.568  |  RUL estimé : >90 jours
+    → Planifier une intervention dans les 7 jours. Surveillance renforcée.
+
+  Moteur 18  |  Risque : MODÉRÉ      |  DI : 0.405  |  RUL estimé : >90 jours
+    → Planifier une inspection dans le mois. Vérifier les seuils d'alerte.
+
+  Moteur  4  |  Risque : MODÉRÉ      |  DI : 0.386  |  RUL estimé : >90 jours
+    → Planifier une inspection dans le mois. Vérifier les seuils d'alerte.
+
+  Moteur 15  |  Risque : MODÉRÉ      |  DI : 0.305  |  RUL estimé : >90 jours
+    → Planifier une inspection dans le mois. Vérifier les seuils d'alerte.
+
+  Moteur 13  |  Risque : FAIBLE      |  DI : 0.283  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur  7  |  Risque : FAIBLE      |  DI : 0.210  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur  3  |  Risque : FAIBLE      |  DI : 0.190  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 12  |  Risque : FAIBLE      |  DI : 0.151  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur  2  |  Risque : FAIBLE      |  DI : 0.146  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 20  |  Risque : FAIBLE      |  DI : 0.130  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 11  |  Risque : FAIBLE      |  DI : 0.119  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 16  |  Risque : FAIBLE      |  DI : 0.117  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur  9  |  Risque : FAIBLE      |  DI : 0.061  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur  8  |  Risque : FAIBLE      |  DI : 0.056  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 10  |  Risque : FAIBLE      |  DI : 0.055  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur  6  |  Risque : FAIBLE      |  DI : 0.046  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 19  |  Risque : FAIBLE      |  DI : 0.037  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 17  |  Risque : FAIBLE      |  DI : 0.031  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur  1  |  Risque : FAIBLE      |  DI : 0.026  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 14  |  Risque : FAIBLE      |  DI : 0.024  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+3. STATISTIQUES DESCRIPTIVES PAR MOTEUR
+----------------------------------------
+    Moteur |  Temp.moy |  Vib.moy |  Vib.max |  Alertes |  Health
+  ------------------------------------------------------------
+         1 |    35.04° |  0.7100 |  1.4600 |      490 |   53.4%
+         2 |    35.01° |  0.7000 |  1.4300 |      569 |   51.4%
+         3 |    35.01° |  0.7000 |  1.3200 |      375 |   52.2%
+         4 |    35.13° |  0.6900 |  1.2600 |      431 |   51.2%
+         5 |    34.94° |  0.6900 |  1.3100 |      732 |   51.2%
+         6 |    35.14° |  0.7000 |  1.3900 |      703 |   53.4%
+         7 |    35.04° |  0.7000 |  1.3400 |      506 |   54.1%
+         8 |    35.12° |  0.7000 |  1.4000 |      437 |   54.0%
+         9 |    34.87° |  0.6900 |  1.3800 |      345 |   52.3%
+        10 |    35.08° |  0.7000 |  1.4800 |      417 |   54.6%
+        11 |    35.03° |  0.7100 |  1.4100 |      390 |   52.0%
+        12 |    34.92° |  0.6900 |  1.4600 |      748 |   52.5%
+        13 |    35.03° |  0.7100 |  1.3600 |      415 |   53.5%
+        14 |    35.04° |  0.7000 |  1.5100 |      716 |   52.4%
+        15 |    34.82° |  0.7000 |  1.3500 |      509 |   51.8%
+        16 |    34.95° |  0.7100 |  1.3800 |      394 |   51.8%
+        17 |    35.00° |  0.7000 |  1.3700 |      736 |   53.4%
+        18 |    35.23° |  0.7000 |  1.3600 |      735 |   54.0%
+        19 |    35.06° |  0.7100 |  1.4000 |      379 |   53.3%
+        20 |    35.08° |  0.7100 |  1.3600 |      869 |   54.3%
+        21 |    74.00° |  1.3300 |  1.8000 |        0 |   25.1%
+
+4. MÉTHODOLOGIE IA/ML
+----------------------------------------
+  Approche        : Non supervisée (pas d'étiquettes à l'entraînement)
+  Modèles         : Ensemble Isolation Forest (60%) + LOF (40%)
+  Features        : 23 indicateurs temporels, fréquentiels et statistiques
+    • Domaine temporel  : énergie, RMS, vib_energy, crest_factor
+    • Stats rolling     : moyenne, écart-type, kurtosis (fenêtre=20)
+    • Domaine fréq.     : FFT amplitude max, fréquence dominante
+    • Envelope (Hilbert): détection défauts roulements
+    • Health score      : indice composite [0–100]
+  RUL             : Indice de dégradation + régression polynomiale
+  Validation      : Alert_Status réel utilisé uniquement en évaluation
+
+5. FICHIERS PRODUITS
+----------------------------------------
+  data/01_raw_motor.csv        — Données brutes extraites du SQL
+  data/02_features_motor.csv   — Données enrichies (23 features)
+  data/03_anomalies.csv        — Résultats détection d'anomalies
+  data/04_rul_results.csv      — Résultats complets avec RUL
+  data/rul_summary.csv         — Résumé RUL par moteur
+  figures/fig1_anomaly_overview.png   — Vue globale anomalies
+  figures/fig2_per_motor.png          — Détail par moteur
+  figures/fig3_validation.png         — Matrice confusion + PR curve
+  figures/fig4_rul_all_motors.png     — RUL tous moteurs
+  figures/fig5_risk_dashboard.png     — Dashboard risque
+  figures/fig6_report_summary.png     — Résumé graphique final
+
+=================================================================

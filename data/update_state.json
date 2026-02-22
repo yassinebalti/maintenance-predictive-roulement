@@ -1,0 +1,28 @@
+{
+  "last_update": "22/02/2026 02:34:54",
+  "last_sql_file": "ai_cp (2).sql",
+  "last_measurement_id": 32810,
+  "last_timestamp": "2025-05-26 15:32:28",
+  "total_rows": 32810,
+  "update_count": 3,
+  "history": [
+    {
+      "date": "20/02/2026 00:43:40",
+      "sql_file": "ai_cp (2).sql",
+      "new_rows": 32810,
+      "total_rows": 32810
+    },
+    {
+      "date": "22/02/2026 02:24:50",
+      "sql_file": "ai_cp (2).sql",
+      "new_rows": 32810,
+      "total_rows": 32810
+    },
+    {
+      "date": "22/02/2026 02:34:54",
+      "sql_file": "ai_cp (2).sql",
+      "new_rows": 32810,
+      "total_rows": 32810
+    }
+  ]
+}

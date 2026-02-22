@@ -1,0 +1,22 @@
+motor_id,name,model,manufacturer,power_rating_kW,voltage_rating_V,current_rating_A,speed_rpm,cosphi_nominal,installation_date,location
+1,Moteur 1600 App Cylindre v1,MDL-1001,Siemens,55.0,400.0,71.0,1500,0.85,2025-04-08,Section E1
+2,Moteur 1601 App Cylindre,MDL-1002,ABB,55.0,400.0,52.0,1500,0.85,2025-04-08,Section E1
+3,Moteur 1602 CLI Fin,MDL-1003,Schneider,37.0,400.0,140.0,1500,0.85,2025-04-08,Section E1
+4,Motor_1603,MDL-1004,ABB,37.0,400.0,94.0,1500,0.85,2025-04-08,Section E1
+5,Motor_1604,MDL-1005,Siemens,24.0,400.0,28.0,1500,0.85,2025-04-08,Section E1
+6,Motor_1605,MDL-1006,WEG,19.0,400.0,35.0,1500,0.85,2025-04-08,Section E1
+7,Motor_1606,MDL-1007,Siemens,52.0,400.0,58.0,1500,0.85,2025-04-08,Section E1
+8,Motor_1607,MDL-1008,ABB,37.0,400.0,88.0,1500,0.85,2025-04-08,Section E1
+9,Motor_1612,MDL-1009,Schneider,30.0,400.0,118.0,1500,0.85,2025-04-08,Section E1
+10,Motor_1613,MDL-1010,ABB,17.9,400.0,95.1,1500,0.85,2025-04-08,Section E1
+11,Motor_11,MDL-1011,ABB,8.5,400.0,135.1,1500,0.85,2025-04-08,Section B
+12,Motor_12,MDL-1012,Schneider,39.9,400.0,29.8,1500,0.85,2025-04-08,Section A
+13,Motor_13,MDL-1013,Siemens,38.5,400.0,121.8,1500,0.85,2025-04-08,Section A
+14,Motor_14,MDL-1014,ABB,60.2,400.0,28.1,1500,0.85,2025-04-08,Section C
+15,Motor_15,MDL-1015,ABB,72.8,400.0,57.1,1500,0.85,2025-04-08,Section A
+16,Motor_16,MDL-1016,Schneider,27.9,400.0,103.9,1500,0.85,2025-04-08,Section C
+17,Motor_17,MDL-1017,Siemens,25.6,400.0,29.4,1500,0.85,2025-04-08,Section D
+18,Motor_18,MDL-1018,WEG,37.3,400.0,30.2,1500,0.85,2025-04-08,Section B
+19,Broyeur à cylindres,MDL-1019,ABB,59.0,400.0,131.0,1500,0.85,2025-04-08,Section C
+20,Alimentation du broyeur,MDL-1020,Siemens,41.0,400.0,15.0,1500,0.85,2025-04-08,Section A
+21,Moteur D,MX500,Siemens,62.5,400.0,158.0,1450,0.92,2024-10-18,Usine 1 - Zone A

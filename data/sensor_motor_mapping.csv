@@ -1,0 +1,8 @@
+sensor_id,motor_id,name,manufacturer,power_kW
+68c11f06,1,Moteur 1600 App Cylindre v1,Siemens,55.0
+4b5e4b32,2,Moteur 1601 App Cylindre,ABB,55.0
+a6a46be1,3,Moteur 1602 CLI Fin,Schneider,37.0
+d9508e77,4,Motor_1603,ABB,37.0
+53cb61b2,6,Motor_1605,WEG,19.0
+2c6254af,8,Motor_1607,ABB,37.0
+bc59bf5f,10,Motor_1613,ABB,17.9
