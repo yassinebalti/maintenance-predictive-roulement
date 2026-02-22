@@ -1,6 +1,6 @@
 =================================================================
   RAPPORT DE MAINTENANCE PRÉDICTIVE — IA/ML
-  Généré le : 21/02/2026 17:11
+  Généré le : 22/02/2026 23:11
 =================================================================
 
 1. RÉSUMÉ EXÉCUTIF
@@ -8,76 +8,76 @@
   Moteurs surveillés        : 21
   Période analysée          : 2025-04-08 07:00:00 → 2025-05-26 15:32:28
   Mesures totales           : 32,810
-  Anomalies détectées       : 3,281 (10.0%)
+  Anomalies détectées       : 12,280 (37.4%)
 
   Distribution des risques :
-    ÉLEVÉ      :  2 moteur(s)  ██
+    ÉLEVÉ      :  1 moteur(s)  █
     MODÉRÉ     :  3 moteur(s)  ███
-    FAIBLE     : 16 moteur(s)  ████████████████
+    FAIBLE     : 17 moteur(s)  █████████████████
 
 2. ALERTES PRIORITAIRES
 ----------------------------------------
-  Moteur  5  |  Risque : ÉLEVÉ       |  DI : 0.623  |  RUL estimé : >90 jours
+  Moteur 21  |  Risque : ÉLEVÉ       |  DI : 0.553  |  RUL estimé : >90 jours
     → Planifier une intervention dans les 7 jours. Surveillance renforcée.
 
-  Moteur 21  |  Risque : ÉLEVÉ       |  DI : 0.568  |  RUL estimé : >90 jours
-    → Planifier une intervention dans les 7 jours. Surveillance renforcée.
-
-  Moteur 18  |  Risque : MODÉRÉ      |  DI : 0.405  |  RUL estimé : >90 jours
+  Moteur  4  |  Risque : MODÉRÉ      |  DI : 0.470  |  RUL estimé : >90 jours
     → Planifier une inspection dans le mois. Vérifier les seuils d'alerte.
 
-  Moteur  4  |  Risque : MODÉRÉ      |  DI : 0.386  |  RUL estimé : >90 jours
+  Moteur 18  |  Risque : MODÉRÉ      |  DI : 0.452  |  RUL estimé : >90 jours
     → Planifier une inspection dans le mois. Vérifier les seuils d'alerte.
 
-  Moteur 15  |  Risque : MODÉRÉ      |  DI : 0.305  |  RUL estimé : >90 jours
+  Moteur  5  |  Risque : MODÉRÉ      |  DI : 0.413  |  RUL estimé : >90 jours
     → Planifier une inspection dans le mois. Vérifier les seuils d'alerte.
 
-  Moteur 13  |  Risque : FAIBLE      |  DI : 0.283  |  RUL estimé : >90 jours
+  Moteur 15  |  Risque : FAIBLE      |  DI : 0.278  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur  7  |  Risque : FAIBLE      |  DI : 0.210  |  RUL estimé : >90 jours
+  Moteur  2  |  Risque : FAIBLE      |  DI : 0.270  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur  3  |  Risque : FAIBLE      |  DI : 0.190  |  RUL estimé : >90 jours
+  Moteur 13  |  Risque : FAIBLE      |  DI : 0.254  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 12  |  Risque : FAIBLE      |  DI : 0.151  |  RUL estimé : >90 jours
+  Moteur 11  |  Risque : FAIBLE      |  DI : 0.216  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur  2  |  Risque : FAIBLE      |  DI : 0.146  |  RUL estimé : >90 jours
+  Moteur  6  |  Risque : FAIBLE      |  DI : 0.199  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 20  |  Risque : FAIBLE      |  DI : 0.130  |  RUL estimé : >90 jours
+  Moteur 20  |  Risque : FAIBLE      |  DI : 0.193  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 11  |  Risque : FAIBLE      |  DI : 0.119  |  RUL estimé : >90 jours
+  Moteur  7  |  Risque : FAIBLE      |  DI : 0.183  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 16  |  Risque : FAIBLE      |  DI : 0.117  |  RUL estimé : >90 jours
+  Moteur  3  |  Risque : FAIBLE      |  DI : 0.180  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur  9  |  Risque : FAIBLE      |  DI : 0.061  |  RUL estimé : >90 jours
+  Moteur 19  |  Risque : FAIBLE      |  DI : 0.129  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur  8  |  Risque : FAIBLE      |  DI : 0.056  |  RUL estimé : >90 jours
+  Moteur 12  |  Risque : FAIBLE      |  DI : 0.117  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 10  |  Risque : FAIBLE      |  DI : 0.055  |  RUL estimé : >90 jours
+  Moteur 16  |  Risque : FAIBLE      |  DI : 0.103  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur  6  |  Risque : FAIBLE      |  DI : 0.046  |  RUL estimé : >90 jours
+  Moteur  9  |  Risque : FAIBLE      |  DI : 0.073  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 19  |  Risque : FAIBLE      |  DI : 0.037  |  RUL estimé : >90 jours
+  Moteur 10  |  Risque : FAIBLE      |  DI : 0.067  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 17  |  Risque : FAIBLE      |  DI : 0.031  |  RUL estimé : >90 jours
+  Moteur  8  |  Risque : FAIBLE      |  DI : 0.050  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur  1  |  Risque : FAIBLE      |  DI : 0.026  |  RUL estimé : >90 jours
+  Moteur 14  |  Risque : FAIBLE      |  DI : 0.042  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
-  Moteur 14  |  Risque : FAIBLE      |  DI : 0.024  |  RUL estimé : >90 jours
+  Moteur  1  |  Risque : FAIBLE      |  DI : 0.025  |  RUL estimé : >90 jours
+    → État satisfaisant. Suivi de routine. Prochaine inspection standard.
+
+  Moteur 17  |  Risque : FAIBLE      |  DI : 0.021  |  RUL estimé : >90 jours
     → État satisfaisant. Suivi de routine. Prochaine inspection standard.
 
 3. STATISTIQUES DESCRIPTIVES PAR MOTEUR
