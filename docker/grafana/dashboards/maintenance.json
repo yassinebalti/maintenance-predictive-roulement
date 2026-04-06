@@ -1,0 +1,315 @@
+{
+  "__inputs": [],
+  "__requires": [
+    {"type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0"},
+    {"type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0"}
+  ],
+  "annotations": {"list": []},
+  "description": "Maintenance Prédictive IA/ML — Pipeline V3",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+
+    {
+      "id": 1,
+      "title": "🏭 Moteurs en RISQUE CRITIQUE",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 1},
+              {"color": "red", "value": 2}
+            ]
+          },
+          "mappings": [],
+          "unit": "none"
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "background"},
+      "targets": [{"expr": "ml_pipeline_n_critique", "legendFormat": "Critique", "refId": "A"}]
+    },
+
+    {
+      "id": 2,
+      "title": "⚠ Moteurs ÉLEVÉ",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 1}
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background"},
+      "targets": [{"expr": "ml_pipeline_n_eleve", "legendFormat": "Élevé", "refId": "A"}]
+    },
+
+    {
+      "id": 3,
+      "title": "✅ Moteurs FAIBLE",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"fixedColor": "green", "mode": "fixed"},
+          "unit": "none"
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background"},
+      "targets": [{"expr": "ml_pipeline_n_faible", "legendFormat": "Faible", "refId": "A"}]
+    },
+
+    {
+      "id": 4,
+      "title": "📨 Messages Traités",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 4, "x": 12, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"fixedColor": "blue", "mode": "fixed"}}},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background"},
+      "targets": [{"expr": "ml_pipeline_messages_processed", "legendFormat": "Traités", "refId": "A"}]
+    },
+
+    {
+      "id": 5,
+      "title": "⚡ Alarmes CUSUM",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 4, "x": 16, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "purple", "value": 1}
+            ]
+          }
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background"},
+      "targets": [{"expr": "ml_pipeline_cusum_alarms", "legendFormat": "CUSUM", "refId": "A"}]
+    },
+
+    {
+      "id": 6,
+      "title": "DI Moyen Flotte",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 4, "x": 20, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 4,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 0.3},
+              {"color": "orange", "value": 0.5},
+              {"color": "red", "value": 0.75}
+            ]
+          }
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background"},
+      "targets": [{"expr": "ml_pipeline_avg_degradation_index", "legendFormat": "DI Moyen", "refId": "A"}]
+    },
+
+    {
+      "id": 10,
+      "title": "Indice de Dégradation — Tous les Moteurs",
+      "type": "bargauge",
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 4},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0, "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 0.30},
+              {"color": "orange", "value": 0.50},
+              {"color": "red", "value": 0.75}
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {"calcs": ["lastNotNull"]},
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "targets": [{
+        "expr": "ml_motor_degradation_index",
+        "legendFormat": "M{{motor_id}}",
+        "refId": "A"
+      }]
+    },
+
+    {
+      "id": 11,
+      "title": "RUL Estimé — Tous les Moteurs (jours)",
+      "type": "bargauge",
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 4},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "d",
+          "min": 0, "max": 90,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red",    "value": null},
+              {"color": "orange", "value": 21},
+              {"color": "yellow", "value": 60},
+              {"color": "green",  "value": 90}
+            ]
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {"calcs": ["lastNotNull"]},
+        "displayMode": "gradient",
+        "showUnfilled": true
+      },
+      "targets": [{
+        "expr": "ml_motor_rul_days",
+        "legendFormat": "M{{motor_id}}",
+        "refId": "A"
+      }]
+    },
+
+    {
+      "id": 20,
+      "title": "Score d'Anomalie Combiné (IF + LOF + Règles)",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 14},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0, "max": 1,
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "pointSize": 3,
+            "showPoints": "auto"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 0.25},
+              {"color": "red", "value": 0.60}
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "multi"}
+      },
+      "targets": [{
+        "expr": "ml_motor_anomaly_score{motor_id=~\"5|18|21|4|15\"}",
+        "legendFormat": "M{{motor_id}} — Score",
+        "refId": "A"
+      }]
+    },
+
+    {
+      "id": 30,
+      "title": "Température par Moteur (°C)",
+      "type": "timeseries",
+      "gridPos": {"h": 7, "w": 12, "x": 0, "y": 22},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {"lineWidth": 1, "fillOpacity": 10}
+        }
+      },
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [{
+        "expr": "ml_motor_temperature{motor_id=~\"5|18|21\"}",
+        "legendFormat": "M{{motor_id}}",
+        "refId": "A"
+      }]
+    },
+
+    {
+      "id": 31,
+      "title": "Vibration par Moteur",
+      "type": "timeseries",
+      "gridPos": {"h": 7, "w": 12, "x": 12, "y": 22},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "velocityms",
+          "custom": {"lineWidth": 1, "fillOpacity": 10}
+        }
+      },
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [{
+        "expr": "ml_motor_vibration{motor_id=~\"5|18|21\"}",
+        "legendFormat": "M{{motor_id}}",
+        "refId": "A"
+      }]
+    },
+
+    {
+      "id": 40,
+      "title": "⚡ CUSUM S⁺ — Détection Rupture",
+      "type": "timeseries",
+      "gridPos": {"h": 7, "w": 24, "x": 0, "y": 29},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {"lineWidth": 2},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green",  "value": null},
+              {"color": "purple", "value": 0.04}
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "ml_motor_cusum_s_pos{motor_id=~\"5|18|21|4\"}",
+          "legendFormat": "M{{motor_id}} — S⁺",
+          "refId": "A"
+        },
+        {
+          "expr": "ml_motor_cusum_alarm{motor_id=~\"5|18|21|4\"}",
+          "legendFormat": "M{{motor_id}} — Alarme",
+          "refId": "B"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "tags": ["maintenance", "ML", "IoT", "kafka"],
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Maintenance Prédictive IA/ML V3",
+  "uid": "maintenance-ml-v3",
+  "version": 1
+}

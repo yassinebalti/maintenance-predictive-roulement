@@ -1,0 +1,314 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  PHASE 3 — DOCKER COMPOSE : STACK COMPLÈTE                      ║
+# ║  Maintenance Prédictive — Tous les services                      ║
+# ╠══════════════════════════════════════════════════════════════════╣
+# ║  Services :                                                      ║
+# ║    zookeeper      → Coordination Kafka                           ║
+# ║    kafka          → Broker messages                              ║
+# ║    kafka-ui       → Interface web Kafka (port 8080)             ║
+# ║    producer       → Simulation capteurs moteurs                  ║
+# ║    consumer       → Pipeline ML temps réel                       ║
+# ║    streamlit      → Dashboard interactif (port 8501)            ║
+# ║    prometheus     → Scrape métriques (port 9090)                ║
+# ║    grafana        → Visualisation métriques (port 3000)         ║
+# ║                                                                  ║
+# ║  Démarrage :                                                     ║
+# ║    docker-compose up -d                                          ║
+# ║    docker-compose logs -f consumer                               ║
+# ║    docker-compose down                                           ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+version: "3.9"
+
+networks:
+  maintenance-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  kafka_data:
+  grafana_data:
+  prometheus_data:
+  stream_results:
+
+# ══════════════════════════════════════════════════════════════════
+#  INFRASTRUCTURE KAFKA
+# ══════════════════════════════════════════════════════════════════
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    hostname: zookeeper
+    networks:
+      - maintenance-net
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_LOG4J_ROOT_LOGLEVEL: WARN
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    hostname: kafka
+    networks:
+      - maintenance-net
+    ports:
+      - "9092:9092"          # Accès externe (localhost)
+      - "9093:9093"          # Accès interne (inter-containers)
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3        # 3 partitions = parallélisme
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168  # 7 jours
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL",
+             "kafka-topics --bootstrap-server kafka:9093 --list 2>/dev/null"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # Interface web Kafka (monitoring topics/messages)
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    networks:
+      - maintenance-net
+    ports:
+      - "8080:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_CLUSTERS_0_NAME: maintenance-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      AUTH_TYPE: DISABLED
+    restart: unless-stopped
+
+  # Initialisation des topics Kafka
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-init
+    networks:
+      - maintenance-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: |
+      bash -c "
+        echo '→ Création des topics Kafka...'
+        kafka-topics --bootstrap-server kafka:9093 \
+          --create --if-not-exists \
+          --topic motor.measurements \
+          --partitions 3 \
+          --replication-factor 1 \
+          --config retention.ms=604800000
+        kafka-topics --bootstrap-server kafka:9093 \
+          --create --if-not-exists \
+          --topic motor.alerts \
+          --partitions 1 \
+          --replication-factor 1
+        kafka-topics --bootstrap-server kafka:9093 \
+          --create --if-not-exists \
+          --topic motor.heartbeat \
+          --partitions 1 \
+          --replication-factor 1
+        echo '✓ Topics créés :'
+        kafka-topics --bootstrap-server kafka:9093 --list
+      "
+    restart: "no"
+
+# ══════════════════════════════════════════════════════════════════
+#  PIPELINE ML
+# ══════════════════════════════════════════════════════════════════
+
+  producer:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pipeline
+    container_name: ml-producer
+    hostname: producer
+    networks:
+      - maintenance-net
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    command: ["python", "kafka/kafka_producer.py", "--interval", "10"]
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9093
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ../data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep kafka_producer | grep -v grep"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  consumer:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pipeline
+    container_name: ml-consumer
+    hostname: consumer
+    networks:
+      - maintenance-net
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    command: ["python", "kafka/kafka_consumer.py"]
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9093
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ../data:/app/data
+      - stream_results:/app/data/stream_results
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL",
+             "test -f /app/data/stream_results/latest.json && echo ok || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+# ══════════════════════════════════════════════════════════════════
+#  DASHBOARD STREAMLIT
+# ══════════════════════════════════════════════════════════════════
+
+  streamlit:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.streamlit
+    container_name: streamlit-dashboard
+    hostname: streamlit
+    networks:
+      - maintenance-net
+    ports:
+      - "8501:8501"
+    depends_on:
+      consumer:
+        condition: service_healthy
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ../data:/app/data
+      - stream_results:/app/data/stream_results
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8501/_stcore/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ══════════════════════════════════════════════════════════════════
+#  MONITORING PROMETHEUS + GRAFANA
+# ══════════════════════════════════════════════════════════════════
+
+  prometheus-exporter:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pipeline
+    container_name: prometheus-exporter
+    hostname: prometheus-exporter
+    networks:
+      - maintenance-net
+    ports:
+      - "8000:8000"
+    command: ["python", "docker/prometheus_exporter.py"]
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - stream_results:/app/data/stream_results
+    depends_on:
+      - consumer
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: prometheus
+    hostname: prometheus
+    networks:
+      - maintenance-net
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--log.level=warn"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9090/-/healthy || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: grafana
+    hostname: grafana
+    networks:
+      - maintenance-net
+    ports:
+      - "3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: maintenance2024
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/dashboards/maintenance.json
+      GF_LOG_LEVEL: warn
+      GF_FEATURE_TOGGLES_ENABLE: publicDashboards
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5

@@ -1,0 +1,49 @@
+# ══════════════════════════════════════════════════════════════════
+#  prometheus.yml — Configuration Prometheus
+#  Maintenance Prédictive — Scrape targets
+# ══════════════════════════════════════════════════════════════════
+
+global:
+  scrape_interval: 10s         # Scrape toutes les 10 secondes
+  evaluation_interval: 10s
+  external_labels:
+    project: 'maintenance-predictive'
+    environment: 'production'
+
+# ── Règles d'alerte ─────────────────────────────────────────────
+rule_files:
+  - "alert_rules.yml"
+
+# ── Alertmanager (optionnel) ────────────────────────────────────
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']
+
+# ── Targets de scrape ──────────────────────────────────────────
+scrape_configs:
+
+  # Pipeline ML — métriques moteurs
+  - job_name: 'ml-maintenance-pipeline'
+    static_configs:
+      - targets: ['prometheus-exporter:8000']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 8s
+    honor_labels: true
+    metric_relabel_configs:
+      # Garder uniquement les métriques ml_*
+      - source_labels: [__name__]
+        regex: 'ml_.*'
+        action: keep
+
+  # Auto-monitoring Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+    scrape_interval: 30s
+
+  # Kafka (si JMX exporter activé)
+  # - job_name: 'kafka'
+  #   static_configs:
+  #     - targets: ['kafka:9308']

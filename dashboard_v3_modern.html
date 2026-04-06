@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PREDICTIVE AI — Motor Intelligence Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#04060d;
+  --s1:#080e1a;
+  --s2:#0d1526;
+  --s3:#111c30;
+  --g1:rgba(255,255,255,0.03);
+  --g2:rgba(255,255,255,0.06);
+  --g3:rgba(255,255,255,0.10);
+  --b1:rgba(255,255,255,0.06);
+  --b2:rgba(255,255,255,0.12);
+  --b3:rgba(255,255,255,0.18);
+  --c1:#38bdf8;    /* sky */
+  --c2:#818cf8;    /* indigo */
+  --c3:#34d399;    /* emerald */
+  --c4:#fb7185;    /* rose */
+  --c5:#fbbf24;    /* amber */
+  --c6:#a78bfa;    /* violet */
+  --txt:#e2e8f0;
+  --tx2:#94a3b8;
+  --tx3:#475569;
+  --tx4:#1e293b;
+}
+
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Space Grotesk',sans-serif;overflow:hidden}
+
+/* ── Animated particle bg ───────────────────────────────── */
+#canvas-bg{position:fixed;inset:0;z-index:0;opacity:.4}
+
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 100% 60% at 0% 0%,rgba(56,189,248,.08) 0%,transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 100%,rgba(129,140,248,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 50%,rgba(52,211,153,.04) 0%,transparent 60%);
+}
+
+/* ── Layout shell ───────────────────────────────────────── */
+.shell{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column}
+
+/* ── Topbar ──────────────────────────────────────────────── */
+.topbar{
+  height:62px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+  background:rgba(8,14,26,.8);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--b1);
+}
+
+.brand{display:flex;align-items:center;gap:14px}
+.brand-icon{
+  width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  display:grid;place-items:center;
+  font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;
+  box-shadow:0 0 30px rgba(56,189,248,.3),0 0 0 1px rgba(56,189,248,.2);
+  flex-shrink:0;
+}
+.brand-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:.06em;
+  background:linear-gradient(90deg,var(--c1) 0%,#c7d2fe 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.brand-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:.15em;margin-top:1px}
+
+.topbar-mid{display:flex;gap:4px}
+.tstat{
+  padding:5px 16px;border-radius:10px;
+  background:var(--g1);border:1px solid var(--b1);
+  text-align:center;transition:all .2s;cursor:default;
+}
+.tstat:hover{background:var(--g2);border-color:var(--b2);transform:translateY(-1px)}
+.tstat-v{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;line-height:1.2}
+.tstat-l{font-size:8.5px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;margin-top:1px}
+
+.live{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 16px;border-radius:100px;
+  background:rgba(52,211,153,.07);
+  border:1px solid rgba(52,211,153,.2);
+  font-family:'DM Mono',monospace;font-size:10px;
+  color:var(--c3);letter-spacing:.08em;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--c3);animation:beat 2s infinite}
+@keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.6)}60%{box-shadow:0 0 0 7px transparent}}
+
+/* ── Nav ─────────────────────────────────────────────────── */
+.nav{
+  height:46px;flex-shrink:0;
+  display:flex;align-items:flex-end;
+  padding:0 32px;gap:2px;
+  background:rgba(8,14,26,.6);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--b1);
+}
+.ntab{
+  padding:8px 20px 10px;
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--tx3);border-radius:10px 10px 0 0;
+  cursor:pointer;border:1px solid transparent;border-bottom:none;
+  transition:all .18s;position:relative;
+}
+.ntab:hover{color:var(--tx2);background:var(--g1)}
+.ntab.on{
+  color:var(--c1);background:rgba(56,189,248,.06);
+  border-color:rgba(56,189,248,.15);border-bottom-color:transparent;
+  top:1px;
+}
+.ntab.on::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--c1),transparent);border-radius:2px}
+
+/* ── Content area ───────────────────────────────────────── */
+.content{flex:1;overflow-y:auto;padding:22px 32px 28px;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+.page{display:none}
+.page.on{display:block}
+
+/* ── KPI row ─────────────────────────────────────────────── */
+.krow{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}
+.kcard{
+  border-radius:16px;padding:18px;
+  background:var(--g1);border:1px solid var(--b1);
+  position:relative;overflow:hidden;
+  transition:all .2s;
+  animation:fadeUp .5s both;
+}
+.kcard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+}
+.kcard:hover{background:var(--g2);border-color:var(--b2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.kcard-accent{position:absolute;bottom:0;left:0;right:0;height:2px;opacity:.6}
+.kcard-icon{font-size:22px;margin-bottom:10px;display:block}
+.kcard-num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:34px;line-height:1;margin-bottom:4px;
+  letter-spacing:.02em;
+}
+.kcard-lbl{font-size:9px;color:var(--tx3);letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.kcard-sub{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--tx4);margin-top:4px}
+
+/* ── Grid helpers ───────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g31{display:grid;grid-template-columns:2.2fr 1fr;gap:14px}
+.mb{margin-bottom:14px}
+.mb2{margin-bottom:18px}
+
+/* ── Glass card ──────────────────────────────────────────── */
+.gcard{
+  border-radius:20px;overflow:hidden;
+  background:linear-gradient(145deg,rgba(13,21,38,.9),rgba(8,14,26,.95));
+  border:1px solid var(--b1);
+  backdrop-filter:blur(16px);
+  box-shadow:0 4px 24px rgba(0,0,0,.2);
+  animation:fadeUp .5s both;
+  transition:border-color .2s;
+  position:relative;
+}
+.gcard:hover{border-color:var(--b2)}
+.gcard::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(145deg,rgba(255,255,255,.025),transparent 40%);
+}
+
+.gh{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+  border-bottom:1px solid var(--b1);
+}
+.gt{
+  font-family:'DM Mono',monospace;
+  font-size:9.5px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--tx2);
+}
+.tag{
+  font-family:'DM Mono',monospace;font-size:8.5px;
+  padding:3px 10px;border-radius:100px;letter-spacing:.06em;
+}
+.tag-sky  {background:rgba(56,189,248,.1); color:var(--c1);border:1px solid rgba(56,189,248,.2)}
+.tag-rose {background:rgba(251,113,133,.1);color:var(--c4);border:1px solid rgba(251,113,133,.2)}
+.tag-amb  {background:rgba(251,191,36,.1); color:var(--c5);border:1px solid rgba(251,191,36,.2)}
+.tag-emr  {background:rgba(52,211,153,.1); color:var(--c3);border:1px solid rgba(52,211,153,.2)}
+.tag-vio  {background:rgba(167,139,250,.1);color:var(--c6);border:1px solid rgba(167,139,250,.2)}
+.tag-ind  {background:rgba(129,140,248,.1);color:var(--c2);border:1px solid rgba(129,140,248,.2)}
+
+.gb{padding:18px 20px}
+.cw{position:relative}
+
+/* ── Motor table ─────────────────────────────────────────── */
+.mt-wrap{overflow-x:auto;max-height:calc(100vh - 230px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
+.mt{width:100%;border-collapse:collapse;font-size:11.5px}
+.mt th{
+  padding:10px 14px;font-family:'DM Mono',monospace;font-size:8.5px;
+  color:var(--tx3);letter-spacing:.14em;text-transform:uppercase;
+  border-bottom:1px solid var(--b1);background:rgba(0,0,0,.15);
+  text-align:left;white-space:nowrap;position:sticky;top:0;z-index:2;
+  backdrop-filter:blur(8px);
+}
+.mt td{
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03);
+  vertical-align:middle;transition:background .15s;white-space:nowrap;
+}
+.mt tr:hover td{background:rgba(56,189,248,.04);cursor:pointer}
+.mt tr.sel td{background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.1)}
+.mt tr.sel td:first-child{border-left:2px solid var(--c1)}
+
+/* di bar */
+.dbar{display:flex;align-items:center;gap:8px;min-width:110px}
+.dbar-bg{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.dbar-f{height:100%;border-radius:2px;transition:width 1s ease}
+.dbar-v{font-family:'DM Mono',monospace;font-size:10px;min-width:38px;text-align:right}
+
+/* risk chip */
+.rc{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:100px;
+  font-family:'DM Mono',monospace;font-size:9px;border:1px solid;font-weight:500;
+}
+.rE{color:var(--c4);border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.08)}
+.rM{color:var(--c5);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)}
+.rF{color:var(--c3);border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.07)}
+.rdot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* brand badge */
+.bb{width:7px;height:7px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:middle}
+
+/* ── Motor detail ────────────────────────────────────────── */
+.dmetrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.dmet{
+  border-radius:12px;padding:12px;text-align:center;
+  background:rgba(0,0,0,.25);border:1px solid var(--b1);
+  transition:border-color .2s;
+}
+.dmet:hover{border-color:var(--b2)}
+.dmet-v{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;margin-bottom:3px}
+.dmet-l{font-size:8.5px;color:var(--tx3);letter-spacing:.12em;text-transform:uppercase}
+
+/* ── Alert item ──────────────────────────────────────────── */
+.aitem{
+  display:flex;gap:14px;padding:13px 20px;
+  border-bottom:1px solid rgba(255,255,255,.03);
+  transition:background .15s;
+  animation:fadeUp .3s both;
+}
+.aitem:hover{background:rgba(255,255,255,.02)}
+.adot-wrap{display:flex;flex-direction:column;align-items:center;padding-top:4px;gap:3px}
+.adot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.aline{flex:1;width:1px;background:rgba(255,255,255,.05);min-height:16px}
+.atitle{font-size:12px;font-weight:600;margin-bottom:3px}
+.ameta{font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:.05em;margin-top:3px}
+
+/* ── Pipeline steps ──────────────────────────────────────── */
+.pstep{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:13px 16px;border-radius:14px;margin-bottom:8px;
+  background:rgba(0,0,0,.2);border:1px solid var(--b1);
+  transition:all .2s;
+}
+.pstep:hover{background:var(--g1);border-color:var(--b2);transform:translateX(4px)}
+.pn{
+  width:32px;height:32px;border-radius:10px;flex-shrink:0;
+  display:grid;place-items:center;
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
+}
+.pt{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;margin-bottom:3px}
+.pd{font-size:10px;color:var(--tx3);line-height:1.5}
+
+/* ── Progress bar ────────────────────────────────────────── */
+.pbar{margin-bottom:12px}
+.pbar-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+.pbar-bg{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.pbar-f{height:100%;border-radius:3px;transition:width 1.2s ease}
+
+/* ── Confusion matrix ────────────────────────────────────── */
+.cm{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmc{
+  border-radius:14px;padding:16px;text-align:center;
+  border:1px solid var(--b1);background:rgba(0,0,0,.2);
+  transition:all .2s;
+}
+.cmc:hover{border-color:var(--b2);transform:translateY(-2px)}
+.cmv{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;margin-bottom:4px}
+.cml{font-size:8.5px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase}
+
+/* ── Improvement cards ───────────────────────────────────── */
+.imp{
+  padding:13px 16px;border-radius:14px;margin-bottom:8px;
+  border:1px solid var(--b1);background:rgba(0,0,0,.15);
+  transition:all .2s;
+}
+.imp:hover{border-color:var(--b2);transform:translateX(3px)}
+.imp-t{font-size:12px;font-weight:700;margin-bottom:4px}
+.imp-d{font-size:10px;color:var(--tx3);line-height:1.55}
+
+/* ── Section header ──────────────────────────────────────── */
+.sec-h{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:14px;
+}
+.sec-h-line{flex:1;height:1px;background:var(--b1)}
+.sec-h-text{font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.kcard:nth-child(1){animation-delay:.04s}.kcard:nth-child(2){animation-delay:.08s}
+.kcard:nth-child(3){animation-delay:.12s}.kcard:nth-child(4){animation-delay:.16s}
+.kcard:nth-child(5){animation-delay:.20s}.kcard:nth-child(6){animation-delay:.24s}
+
+/* ── Model arch blocks ───────────────────────────────────── */
+.arch{
+  border-radius:14px;padding:14px 16px;margin-bottom:10px;
+  border:1px solid var(--b1);background:rgba(0,0,0,.15);
+}
+.arch-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.arch-t{font-weight:700;font-size:12px}
+
+/* empty state */
+.empty{text-align:center;padding:50px 20px;color:var(--tx3)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.5}
+.empty-t{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;line-height:1.8}
+</style>
+</head>
+<body>
+
+<canvas id="canvas-bg"></canvas>
+
+<div class="shell">
+
+<!-- ══ TOP BAR ══════════════════════════════════════════════════ -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon">AI</div>
+    <div>
+      <div class="brand-name">Predictive Maintenance</div>
+      <div class="brand-sub">Motor Intelligence Platform · 21 moteurs · 400V · Avr–Mai 2025</div>
+    </div>
+  </div>
+
+  <div class="topbar-mid">
+    <div class="tstat"><div class="tstat-v" style="color:var(--c1)">0.9544</div><div class="tstat-l">AUC ROC</div></div>
+    <div class="tstat"><div class="tstat-v" style="color:var(--c4)">2</div><div class="tstat-l">Critiques</div></div>
+    <div class="tstat"><div class="tstat-v" style="color:var(--c5)">3</div><div class="tstat-l">Modérés</div></div>
+    <div class="tstat"><div class="tstat-v" style="color:var(--c3)">16</div><div class="tstat-l">Sains</div></div>
+    <div class="tstat"><div class="tstat-v">32 810</div><div class="tstat-l">Mesures</div></div>
+    <div class="tstat"><div class="tstat-v" style="color:var(--c5)">10 896</div><div class="tstat-l">Alertes</div></div>
+  </div>
+
+  <div class="live"><div class="dot"></div>Surveillance active</div>
+</div>
+
+<!-- ══ NAV ══════════════════════════════════════════════════════ -->
+<div class="nav">
+  <div class="ntab on"  onclick="go('ov',this)">Vue Globale</div>
+  <div class="ntab" onclick="go('fl',this)">Flotte Moteurs</div>
+  <div class="ntab" onclick="go('an',this)">Analyse IA</div>
+  <div class="ntab" onclick="go('al',this)">Alertes</div>
+  <div class="ntab" onclick="go('mo',this)">Modèle IA</div>
+</div>
+
+<!-- ══ CONTENT ══════════════════════════════════════════════════ -->
+<div class="content">
+
+<!-- ── OVERVIEW ─────────────────────────────────────────────── -->
+<div id="pg-ov" class="page on">
+
+  <div class="krow">
+    <div class="kcard">
+      <div class="kcard-accent" style="background:linear-gradient(90deg,var(--c1),transparent)"></div>
+      <span class="kcard-icon">🏭</span>
+      <div class="kcard-num" style="color:var(--c1)">21</div>
+      <div class="kcard-lbl">Moteurs surveillés</div>
+      <div class="kcard-sub">5 sections · 400 V</div>
+    </div>
+    <div class="kcard">
+      <div class="kcard-accent" style="background:linear-gradient(90deg,var(--c2),transparent)"></div>
+      <span class="kcard-icon">📡</span>
+      <div class="kcard-num" style="color:var(--c2)">32 810</div>
+      <div class="kcard-lbl">Mesures totales</div>
+      <div class="kcard-sub">Intervalle Δ = 15 min</div>
+    </div>
+    <div class="kcard">
+      <div class="kcard-accent" style="background:linear-gradient(90deg,var(--c4),transparent)"></div>
+      <span class="kcard-icon">⚡</span>
+      <div class="kcard-num" style="color:var(--c4)">10 896</div>
+      <div class="kcard-lbl">Alertes détectées</div>
+      <div class="kcard-sub">33.2 % des mesures</div>
+    </div>
+    <div class="kcard">
+      <div class="kcard-accent" style="background:linear-gradient(90deg,var(--c5),transparent)"></div>
+      <span class="kcard-icon">🔬</span>
+      <div class="kcard-num" style="color:var(--c5)">3 281</div>
+      <div class="kcard-lbl">Anomalies IA</div>
+      <div class="kcard-sub">10.0 % · seuil 0.25</div>
+    </div>
+    <div class="kcard">
+      <div class="kcard-accent" style="background:linear-gradient(90deg,var(--c3),transparent)"></div>
+      <span class="kcard-icon">🎯</span>
+      <div class="kcard-num" style="color:var(--c3)">95.4 %</div>
+      <div class="kcard-lbl">Précision IA</div>
+      <div class="kcard-sub">AUC ROC = 0.9544</div>
+    </div>
+    <div class="kcard">
+      <div class="kcard-accent" style="background:linear-gradient(90deg,var(--c6),transparent)"></div>
+      <span class="kcard-icon">⚙️</span>
+      <div class="kcard-num" style="color:var(--c6)">23</div>
+      <div class="kcard-lbl">Features IA</div>
+      <div class="kcard-sub">FFT · Hilbert · Roll</div>
+    </div>
+  </div>
+
+  <div class="g3 mb">
+    <div class="gcard">
+      <div class="gh"><span class="gt">Distribution Risques</span><span class="tag tag-sky">21 moteurs</span></div>
+      <div class="gb">
+        <div class="cw" style="height:185px"><canvas id="c-risk"></canvas></div>
+        <div style="display:flex;justify-content:center;gap:20px;margin-top:12px;font-family:'DM Mono',monospace;font-size:10px">
+          <span style="color:var(--c4)">● ÉLEVÉ&nbsp;&nbsp;2</span>
+          <span style="color:var(--c5)">● MODÉRÉ&nbsp;3</span>
+          <span style="color:var(--c3)">● FAIBLE 16</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gcard">
+      <div class="gh"><span class="gt">Alertes par Paramètre</span><span class="tag tag-rose">10 896 total</span></div>
+      <div class="gb"><div class="cw" style="height:215px"><canvas id="c-params"></canvas></div></div>
+    </div>
+
+    <div class="gcard">
+      <div class="gh"><span class="gt">DI Moyen par Fabricant</span><span class="tag tag-sky">4 fabricants</span></div>
+      <div class="gb"><div class="cw" style="height:215px"><canvas id="c-brands"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="gcard">
+      <div class="gh"><span class="gt">Alertes Quotidiennes — Flotte</span><span class="tag tag-amb">Avr → Mai 2025</span></div>
+      <div class="gb"><div class="cw" style="height:205px"><canvas id="c-daily"></canvas></div></div>
+    </div>
+    <div class="gcard">
+      <div class="gh"><span class="gt">Indice Dégradation — Classement</span><span class="tag tag-rose">21 moteurs</span></div>
+      <div class="gb"><div class="cw" style="height:205px"><canvas id="c-dibar"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FLEET ─────────────────────────────────────────────────── -->
+<div id="pg-fl" class="page">
+  <div class="g31">
+    <div class="gcard">
+      <div class="gh"><span class="gt">Flotte — 21 Moteurs</span><span class="tag tag-sky">Cliquer pour détail</span></div>
+      <div class="mt-wrap">
+        <table class="mt">
+          <thead><tr>
+            <th>ID</th><th>Nom</th><th>Fabricant</th><th>Section</th>
+            <th>Puissance</th><th>Indice DI</th><th>Risque</th><th>% Alertes</th><th>Health</th>
+          </tr></thead>
+          <tbody id="mtbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="gcard" style="position:sticky;top:0">
+        <div class="gh">
+          <span class="gt" id="d-title">Sélectionner</span>
+          <span class="tag tag-sky" id="d-badge">—</span>
+        </div>
+        <div style="padding:16px 20px">
+          <div id="d-empty" class="empty">
+            <div class="empty-icon">⚙️</div>
+            <div class="empty-t">Cliquer sur un<br>moteur pour voir<br>le détail</div>
+          </div>
+          <div id="d-body" style="display:none">
+            <div class="dmetrics" id="d-metrics"></div>
+            <div class="cw" style="height:150px;margin-bottom:14px"><canvas id="c-mdi"></canvas></div>
+            <div id="d-extra"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ANALYTICS ─────────────────────────────────────────────── -->
+<div id="pg-an" class="page">
+  <div class="krow" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kcard"><div class="kcard-accent" style="background:linear-gradient(90deg,var(--c3),transparent)"></div>
+      <span class="kcard-icon">🎯</span><div class="kcard-num" style="color:var(--c3)">0.9544</div>
+      <div class="kcard-lbl">AUC ROC Score</div><div class="kcard-sub">Hybrid IF + Règles métier</div></div>
+    <div class="kcard"><div class="kcard-accent" style="background:linear-gradient(90deg,var(--c6),transparent)"></div>
+      <span class="kcard-icon">🧠</span><div class="kcard-num" style="color:var(--c6)">0.9360</div>
+      <div class="kcard-lbl">AUC Autoencoder</div><div class="kcard-sub">Deep learning comparatif</div></div>
+    <div class="kcard"><div class="kcard-accent" style="background:linear-gradient(90deg,var(--c5),transparent)"></div>
+      <span class="kcard-icon">⚡</span><div class="kcard-num" style="color:var(--c5)">61.0 %</div>
+      <div class="kcard-lbl">Précision</div><div class="kcard-sub">TP / (TP + FP)</div></div>
+    <div class="kcard"><div class="kcard-accent" style="background:linear-gradient(90deg,var(--c1),transparent)"></div>
+      <span class="kcard-icon">📡</span><div class="kcard-num" style="color:var(--c1)">80.8 %</div>
+      <div class="kcard-lbl">Rappel (Recall)</div><div class="kcard-sub">TP / (TP + FN)</div></div>
+  </div>
+
+  <div class="g2 mb">
+    <div class="gcard">
+      <div class="gh"><span class="gt">Importance Features (XAI)</span><span class="tag tag-vio">23 features</span></div>
+      <div class="gb"><div class="cw" style="height:255px"><canvas id="c-feat"></canvas></div></div>
+    </div>
+    <div class="gcard">
+      <div class="gh"><span class="gt">Comparaison Modèles</span><span class="tag tag-emr">Hybrid V2 optimal</span></div>
+      <div class="gb">
+        <div class="cw" style="height:170px;margin-bottom:14px"><canvas id="c-models"></canvas></div>
+        <div style="font-size:10px;color:var(--tx3);font-family:'DM Mono',monospace;line-height:1.8;padding:10px 14px;background:rgba(0,0,0,.15);border-radius:10px;border:1px solid var(--b1)">
+          <span style="color:var(--c1)">▶ HYBRID V2 SÉLECTIONNÉ</span><br>
+          30% Isolation Forest + 70% Règles Métier + Fleet Bonus<br>
+          <span style="color:var(--tx3)">Améliorations V2 :</span> XAI · Fleet Analysis · Confirmation temporelle
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gcard">
+    <div class="gh"><span class="gt">Évolution Temporelle DI — Moteurs Prioritaires</span><span class="tag tag-amb">Avr → Mai 2025</span></div>
+    <div class="gb"><div class="cw" style="height:230px"><canvas id="c-dievol"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ── ALERTS ─────────────────────────────────────────────────── -->
+<div id="pg-al" class="page">
+  <div class="g2">
+    <div class="gcard">
+      <div class="gh"><span class="gt">Alertes Prioritaires</span><span class="tag tag-rose">Action requise</span></div>
+      <div id="afeed" style="max-height:calc(100vh - 230px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--b2) transparent"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="gcard">
+        <div class="gh"><span class="gt">Top Moteurs % Alertes</span><span class="tag tag-amb">Classement</span></div>
+        <div class="gb"><div class="cw" style="height:195px"><canvas id="c-altop"></canvas></div></div>
+      </div>
+      <div class="gcard">
+        <div class="gh"><span class="gt">Répartition Horaire</span><span class="tag tag-sky">Par heure</span></div>
+        <div class="gb"><div class="cw" style="height:140px"><canvas id="c-alhour"></canvas></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODEL ─────────────────────────────────────────────────── -->
+<div id="pg-mo" class="page">
+  <div class="g2 mb">
+    <div class="gcard">
+      <div class="gh"><span class="gt">Architecture Modèle Hybride</span><span class="tag tag-emr">V2 Sélectionné</span></div>
+      <div class="gb">
+        <div class="arch">
+          <div class="arch-head"><span class="arch-t" style="color:var(--c1)">Isolation Forest</span><span class="tag tag-sky">30 %</span></div>
+          <div class="pbar"><div class="pbar-top"><span style="font-size:10px;color:var(--tx3)">n_estimators=500 · contamination=auto</span><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--c1)">30%</span></div><div class="pbar-bg"><div class="pbar-f" style="width:30%;background:linear-gradient(90deg,var(--c1),#60d5fa)"></div></div></div>
+          <div style="font-size:10px;color:var(--tx3)">Entraîné sur 21 904 mesures NORMALES · non supervisé</div>
+        </div>
+        <div class="arch">
+          <div class="arch-head"><span class="arch-t" style="color:var(--c5)">Règles Métier</span><span class="tag tag-amb">70 %</span></div>
+          <div class="pbar"><div class="pbar-top"><span style="font-size:10px;color:var(--tx3)">4 paramètres · seuils individuels par moteur</span><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--c5)">70%</span></div><div class="pbar-bg"><div class="pbar-f" style="width:70%;background:linear-gradient(90deg,var(--c5),#fde68a)"></div></div></div>
+          <div style="font-size:10px;color:var(--tx3)">Temp · Courant · Vibration · Accélération · calibrés depuis DB</div>
+        </div>
+        <div class="arch">
+          <div class="arch-head"><span class="arch-t" style="color:var(--c6)">Fleet Analysis Bonus</span><span class="tag tag-vio">+0.10</span></div>
+          <div style="font-size:10px;color:var(--tx3);line-height:1.6">Score +0.10 si le moteur diverge de la médiane flotte<br>Détecte M21 (74°C vs 35°C flotte) malgré seuils calibrés à 40°C</div>
+        </div>
+      </div>
+    </div>
+    <div class="gcard">
+      <div class="gh"><span class="gt">Pipeline de Traitement</span><span class="tag tag-sky">5 étapes</span></div>
+      <div class="gb" id="pipeline-body"></div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="gcard">
+      <div class="gh"><span class="gt">Matrice de Confusion</span><span class="tag tag-emr">Validation</span></div>
+      <div class="gb">
+        <div class="cm">
+          <div class="cmc" style="border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.06)"><div class="cmv" style="color:var(--c3)">8 805</div><div class="cml">Vrai Positif</div></div>
+          <div class="cmc" style="border-color:rgba(251,191,36,.15);background:rgba(251,191,36,.05)"><div class="cmv" style="color:var(--c5)">5 637</div><div class="cml">Faux Positif</div></div>
+          <div class="cmc" style="border-color:rgba(251,113,133,.15);background:rgba(251,113,133,.05)"><div class="cmv" style="color:var(--c4)">2 091</div><div class="cml">Faux Négatif</div></div>
+          <div class="cmc" style="border-color:rgba(56,189,248,.15);background:rgba(56,189,248,.05)"><div class="cmv" style="color:var(--c1)">16 277</div><div class="cml">Vrai Négatif</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gcard">
+      <div class="gh"><span class="gt">Métriques Performance</span><span class="tag tag-emr">AUC 0.9544</span></div>
+      <div class="gb">
+        <div class="pbar"><div class="pbar-top"><span style="font-size:11px">AUC ROC</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--c3)">95.44%</span></div><div class="pbar-bg"><div class="pbar-f" style="width:95.44%;background:linear-gradient(90deg,var(--c3),#6ee7b7)"></div></div></div>
+        <div class="pbar"><div class="pbar-top"><span style="font-size:11px">Rappel</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--c1)">80.8%</span></div><div class="pbar-bg"><div class="pbar-f" style="width:80.8%;background:var(--c1)"></div></div></div>
+        <div class="pbar"><div class="pbar-top"><span style="font-size:11px">F1-Score</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--c6)">69.6%</span></div><div class="pbar-bg"><div class="pbar-f" style="width:69.6%;background:var(--c6)"></div></div></div>
+        <div class="pbar"><div class="pbar-top"><span style="font-size:11px">Précision</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--c5)">61.0%</span></div><div class="pbar-bg"><div class="pbar-f" style="width:61%;background:var(--c5)"></div></div></div>
+        <div class="pbar"><div class="pbar-top"><span style="font-size:11px">Spécificité</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--tx2)">74.3%</span></div><div class="pbar-bg"><div class="pbar-f" style="width:74.3%;background:#64748b"></div></div></div>
+      </div>
+    </div>
+
+    <div class="gcard">
+      <div class="gh"><span class="gt">Améliorations V2</span><span class="tag tag-emr">+0.49% AUC</span></div>
+      <div class="gb">
+        <div class="imp" style="border-color:rgba(56,189,248,.2);background:rgba(56,189,248,.04)"><div class="imp-t" style="color:var(--c1)">🔍 XAI Feature Importance</div><div class="imp-d">SHAP analysis · vib_energy_mean = feature principale (31%) · crest_factor (18%)</div></div>
+        <div class="imp" style="border-color:rgba(251,191,36,.2);background:rgba(251,191,36,.04)"><div class="imp-t" style="color:var(--c5)">🚢 Fleet Analysis</div><div class="imp-d">Comparaison vs médiane flotte · Détecte M21 malgré seuils calibrés à 40°C</div></div>
+        <div class="imp" style="border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.04)"><div class="imp-t" style="color:var(--c3)">⏱ Confirmation Temporelle</div><div class="imp-d">3 mesures consécutives requises · Fausses alarmes −13.1% · AUC +0.49%</div></div>
+        <div class="imp" style="border-color:rgba(167,139,250,.2);background:rgba(167,139,250,.04)"><div class="imp-t" style="color:var(--c6)">🤖 Autoencoder Comparatif</div><div class="imp-d">Deep learning validé · AUC = 0.936 vs Hybrid 0.954 · Hybrid retenu</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- content -->
+</div><!-- shell -->
+
+<script>
+// ══ PARTICLE BG ════════════════════════════════════════════════
+(function(){
+  const cv=document.getElementById('canvas-bg'),ctx=cv.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;init()}
+  function init(){
+    pts=[];
+    for(let i=0;i<55;i++)pts.push({
+      x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,
+      r:Math.random()*1.5+.5
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(56,189,248,0.35)';ctx.fill();
+    });
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<120){
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(56,189,248,${.12*(1-d/120)})`;
+        ctx.lineWidth=.5;ctx.stroke();
+      }
+    }));
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize',resize);resize();draw();
+})();
+
+// ══ DATA ════════════════════════════════════════════════════════
+const M=[
+  {id:1, n:'Moteur 1600 App Cylindre v1',mfr:'Siemens',  pw:55,  loc:'Section E1',di:.0261,risk:'FAIBLE', ap:29.9,t:35.0,v:.710,c:57.0, hs:53.4},
+  {id:2, n:'Moteur 1601 App Cylindre',   mfr:'ABB',      pw:55,  loc:'Section E1',di:.1459,risk:'FAIBLE', ap:34.7,t:35.0,v:.700,c:41.5, hs:51.4},
+  {id:3, n:'Moteur 1602 CLI Fin',        mfr:'Schneider',pw:37,  loc:'Section E1',di:.190, risk:'FAIBLE', ap:22.9,t:35.0,v:.704,c:112.5,hs:52.2},
+  {id:4, n:'Motor_1603',                 mfr:'ABB',      pw:37,  loc:'Section E1',di:.3858,risk:'MODÉRÉ', ap:26.3,t:35.1,v:.694,c:75.6, hs:51.2},
+  {id:5, n:'Motor_1604',                 mfr:'Siemens',  pw:24,  loc:'Section E1',di:.6231,risk:'ÉLEVÉ',  ap:44.6,t:34.9,v:.690,c:22.3, hs:51.2},
+  {id:6, n:'Motor_1605',                 mfr:'WEG',      pw:19,  loc:'Section E1',di:.0459,risk:'FAIBLE', ap:42.9,t:35.1,v:.699,c:28.5, hs:53.4},
+  {id:7, n:'Motor_1606',                 mfr:'Siemens',  pw:52,  loc:'Section E1',di:.2105,risk:'FAIBLE', ap:30.9,t:35.0,v:.697,c:46.4, hs:54.1},
+  {id:8, n:'Motor_1607',                 mfr:'ABB',      pw:37,  loc:'Section E1',di:.0556,risk:'FAIBLE', ap:26.6,t:35.1,v:.698,c:70.7, hs:54.0},
+  {id:9, n:'Motor_1612',                 mfr:'Schneider',pw:30,  loc:'Section E1',di:.0606,risk:'FAIBLE', ap:21.0,t:34.9,v:.693,c:94.7, hs:52.3},
+  {id:10,n:'Motor_1613',                 mfr:'ABB',      pw:17.9,loc:'Section E1',di:.055, risk:'FAIBLE', ap:25.4,t:35.1,v:.695,c:76.0, hs:54.6},
+  {id:11,n:'Motor_11',                   mfr:'ABB',      pw:8.5, loc:'Section B', di:.1195,risk:'FAIBLE', ap:23.8,t:35.0,v:.705,c:108.0,hs:52.0},
+  {id:12,n:'Motor_12',                   mfr:'Schneider',pw:39.9,loc:'Section A', di:.1507,risk:'FAIBLE', ap:45.6,t:34.9,v:.694,c:23.7, hs:52.5},
+  {id:13,n:'Motor_13',                   mfr:'Siemens',  pw:38.5,loc:'Section A', di:.2831,risk:'FAIBLE', ap:25.3,t:35.0,v:.708,c:97.4, hs:53.5},
+  {id:14,n:'Motor_14',                   mfr:'ABB',      pw:60.2,loc:'Section C', di:.0239,risk:'FAIBLE', ap:43.7,t:35.0,v:.701,c:22.4, hs:52.4},
+  {id:15,n:'Motor_15',                   mfr:'ABB',      pw:72.8,loc:'Section A', di:.3053,risk:'MODÉRÉ', ap:31.0,t:34.8,v:.701,c:45.4, hs:51.8},
+  {id:16,n:'Motor_16',                   mfr:'Schneider',pw:27.9,loc:'Section C', di:.1166,risk:'FAIBLE', ap:24.0,t:35.0,v:.706,c:83.0, hs:51.8},
+  {id:17,n:'Motor_17',                   mfr:'Siemens',  pw:25.6,loc:'Section D', di:.0309,risk:'FAIBLE', ap:44.9,t:35.0,v:.700,c:23.5, hs:53.4},
+  {id:18,n:'Motor_18',                   mfr:'WEG',      pw:37.3,loc:'Section B', di:.4053,risk:'MODÉRÉ', ap:44.8,t:35.2,v:.701,c:24.2, hs:54.0},
+  {id:19,n:'Broyeur à cylindres',        mfr:'ABB',      pw:59,  loc:'Section C', di:.037, risk:'FAIBLE', ap:23.1,t:35.1,v:.706,c:105.2,hs:53.3},
+  {id:20,n:'Alimentation du broyeur',    mfr:'Siemens',  pw:41,  loc:'Section A', di:.1299,risk:'FAIBLE', ap:53.0,t:35.1,v:.705,c:12.5, hs:54.3},
+  {id:21,n:'Moteur D',                   mfr:'Siemens',  pw:62.5,loc:'Zone A',    di:.5684,risk:'ÉLEVÉ',  ap:0.0, t:74.0,v:1.33,c:57.5, hs:25.1},
+];
+const BC={Siemens:'#38bdf8',ABB:'#fb7185',Schneider:'#34d399',WEG:'#a78bfa'};
+const RC={ÉLEVÉ:'#fb7185',MODÉRÉ:'#fbbf24',FAIBLE:'#34d399'};
+const DAILY=[284,287,250,268,271,245,260,278,263,255,241,267,259,272,248,261,256,243,269,257,244,263,258,247,265,252,241,268,255,243,261,254,248,267,251,238,264,249,236,259,244];
+const DLABS=Array.from({length:41},(_,i)=>{const d=new Date('2025-04-08');d.setDate(d.getDate()+i);return`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`});
+const DIEVOL={5:[.38,.41,.44,.46,.48,.50,.52,.54,.55,.57,.58,.59,.60,.61,.62,.621,.622,.623],21:[0,.08,.37,.42,.47,.55,.44,.57],18:[.28,.30,.32,.34,.35,.37,.38,.39,.40,.40,.405],4:[.22,.25,.27,.29,.31,.33,.35,.36,.37,.38,.385,.386],1:Array(18).fill(.026)};
+
+// ══ Chart defaults ══════════════════════════════════════════════
+Chart.defaults.color='#475569';
+Chart.defaults.borderColor='rgba(255,255,255,0.05)';
+Chart.defaults.font.family="'DM Mono',monospace";
+Chart.defaults.font.size=10;
+const TTP={backgroundColor:'#0d1526',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleColor:'#38bdf8',bodyColor:'#e2e8f0',padding:10,cornerRadius:10,displayColors:false};
+
+// ══ CHARTS ══════════════════════════════════════════════════════
+function buildCharts(){
+  // Risk donut
+  new Chart(document.getElementById('c-risk'),{
+    type:'doughnut',
+    data:{labels:['ÉLEVÉ','MODÉRÉ','FAIBLE'],
+      datasets:[{data:[2,3,16],
+        backgroundColor:['rgba(251,113,133,.75)','rgba(251,191,36,.75)','rgba(52,211,153,.75)'],
+        borderColor:['#fb7185','#fbbf24','#34d399'],borderWidth:2,hoverOffset:12}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'70%',
+      plugins:{legend:{display:false},tooltip:{...TTP,callbacks:{label:c=>` ${c.label}: ${c.parsed} moteurs`}}}}
+  });
+
+  // Params
+  new Chart(document.getElementById('c-params'),{
+    type:'bar',
+    data:{labels:['Température','Courant','Vibration','Accélération'],
+      datasets:[{data:[5175,3588,1607,526],
+        backgroundColor:['rgba(251,113,133,.4)','rgba(251,191,36,.4)','rgba(56,189,248,.4)','rgba(52,211,153,.4)'],
+        borderColor:['#fb7185','#fbbf24','#38bdf8','#34d399'],borderWidth:1,borderRadius:8}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:TTP},
+      scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{color:'#94a3b8'}}}}
+  });
+
+  // Brands
+  new Chart(document.getElementById('c-brands'),{
+    type:'bar',
+    data:{labels:['Siemens','ABB','Schneider','WEG'],
+      datasets:[{data:[.211,.161,.136,.327],
+        backgroundColor:Object.values(BC).map(c=>c+'33'),
+        borderColor:Object.values(BC),borderWidth:2,borderRadius:10}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:TTP},
+      scales:{x:{grid:{display:false},ticks:{color:'#94a3b8'}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#475569'}}}}
+  });
+
+  // Daily
+  new Chart(document.getElementById('c-daily'),{
+    type:'line',
+    data:{labels:DLABS,
+      datasets:[{data:DAILY,borderColor:'#fbbf24',backgroundColor:'rgba(251,191,36,.07)',
+        borderWidth:2,fill:true,tension:.4,pointRadius:0,pointHoverRadius:6,pointHoverBackgroundColor:'#fbbf24'}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:TTP},
+      scales:{x:{grid:{display:false},ticks:{color:'#475569',maxTicksLimit:8,maxRotation:0}},
+              y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#475569'}}}}
+  });
+
+  // DI bar
+  const s=[...M].sort((a,b)=>b.di-a.di);
+  new Chart(document.getElementById('c-dibar'),{
+    type:'bar',
+    data:{labels:s.map(m=>`M${m.id}`),
+      datasets:[{data:s.map(m=>m.di),
+        backgroundColor:s.map(m=>RC[m.risk]+'44'),
+        borderColor:s.map(m=>RC[m.risk]),borderWidth:1,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{...TTP,callbacks:{label:c=>`DI: ${c.parsed.y.toFixed(4)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#475569',font:{size:9}}},
+              y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#475569'},min:0,max:.7}}}
+  });
+
+  // Features
+  const F=[['vib_energy_mean',.31],['crest_factor',.18],['vib_kurt',.15],['temp_mean',.12],['envelope_mean',.09],['fft_max_amp',.07],['courant_mean',.05],['temp_trend',.03]];
+  new Chart(document.getElementById('c-feat'),{
+    type:'bar',
+    data:{labels:F.map(f=>f[0]),
+      datasets:[{data:F.map(f=>f[1]),
+        backgroundColor:F.map((_,i)=>`hsla(${188+i*11},65%,62%,.45)`),
+        borderColor:F.map((_,i)=>`hsl(${188+i*11},65%,62%)`),borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:TTP},
+      scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#475569',callback:v=>(v*100).toFixed(0)+'%'}},
+              y:{grid:{display:false},ticks:{color:'#94a3b8'}}}}
+  });
+
+  // Models radar
+  new Chart(document.getElementById('c-models'),{
+    type:'radar',
+    data:{labels:['AUC ROC','Précision','Rappel','F1','Vitesse'],
+      datasets:[
+        {label:'Hybrid V2',data:[95.4,61,80.8,69.5,90],borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,.09)',borderWidth:2,pointBackgroundColor:'#38bdf8',pointRadius:3},
+        {label:'Autoencoder',data:[93.6,58,78,66.5,40],borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,.05)',borderWidth:1.5,borderDash:[4,4],pointRadius:2},
+        {label:'IF seul',data:[89,52,72,60.5,95],borderColor:'#475569',backgroundColor:'rgba(71,85,105,.04)',borderWidth:1,borderDash:[2,4],pointRadius:2},
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{color:'#94a3b8',boxWidth:9,font:{size:9},padding:12}},tooltip:TTP},
+      scales:{r:{grid:{color:'rgba(255,255,255,.06)'},pointLabels:{color:'#94a3b8',font:{size:9}},ticks:{display:false},min:40,max:100}}}
+  });
+
+  // DI evolution
+  const dc={5:'#fb7185',21:'#fb923c',18:'#fbbf24',4:'#facc15',1:'#34d399'};
+  const dn={5:'M5 ÉLEVÉ',21:'M21 ÉLEVÉ',18:'M18 MODÉRÉ',4:'M4 MODÉRÉ',1:'M1 FAIBLE'};
+  new Chart(document.getElementById('c-dievol'),{
+    type:'line',
+    data:{labels:Array.from({length:18},(_,i)=>`S${i+1}`),
+      datasets:Object.entries(DIEVOL).map(([mid,vals])=>({
+        label:dn[mid],data:vals,borderColor:dc[mid],backgroundColor:dc[mid]+'10',
+        borderWidth:mid=='5'||mid=='21'?2.5:1.5,fill:false,tension:.4,pointRadius:2}))},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{color:'#94a3b8',boxWidth:9,font:{size:9},padding:12}},tooltip:TTP},
+      scales:{x:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#475569'}},
+              y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#475569'},min:0,max:.7}}}
+  });
+
+  // Alert top
+  const ta=[...M].sort((a,b)=>b.ap-a.ap).slice(0,8);
+  new Chart(document.getElementById('c-altop'),{
+    type:'bar',
+    data:{labels:ta.map(m=>`M${m.id}`),
+      datasets:[{data:ta.map(m=>m.ap),
+        backgroundColor:ta.map(m=>RC[m.risk]+'44'),borderColor:ta.map(m=>RC[m.risk]),borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{...TTP,callbacks:{label:c=>`${c.parsed.y}%`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#94a3b8'}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#475569',callback:v=>v+'%'},min:0,max:60}}}
+  });
+
+  // Hourly
+  const hv=[120,95,80,70,65,75,110,180,220,245,260,255,240,250,258,262,248,235,220,200,185,168,150,135];
+  new Chart(document.getElementById('c-alhour'),{
+    type:'bar',
+    data:{labels:hv.map((_,i)=>i+'h'),
+      datasets:[{data:hv,
+        backgroundColor:hv.map(v=>v>240?'rgba(251,113,133,.45)':v>200?'rgba(251,191,36,.35)':'rgba(56,189,248,.2)'),
+        borderColor:hv.map(v=>v>240?'#fb7185':v>200?'#fbbf24':'#38bdf8'),borderWidth:1,borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:TTP},
+      scales:{x:{grid:{display:false},ticks:{color:'#475569',font:{size:8},maxRotation:0}},
+              y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#475569'}}}}
+  });
+}
+
+// ══ TABLE ════════════════════════════════════════════════════════
+function buildTable(){
+  M.forEach(m=>{
+    const c=RC[m.risk],bc=BC[m.mfr]||'#fff';
+    const rcls=m.risk==='ÉLEVÉ'?'rE':m.risk==='MODÉRÉ'?'rM':'rF';
+    const hc=m.hs>60?'var(--c3)':m.hs>40?'var(--c5)':'var(--c4)';
+    const tr=document.createElement('tr');
+    tr.dataset.id=m.id;
+    tr.innerHTML=`
+      <td style="font-family:'DM Mono',monospace;color:var(--c1);font-size:11px;font-weight:500">M${m.id}</td>
+      <td style="font-size:11px;max-width:155px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.n}</td>
+      <td><span class="bb" style="background:${bc}"></span><span style="font-size:11px">${m.mfr}</span></td>
+      <td style="font-size:10px;color:var(--tx3)">${m.loc}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px">${m.pw} kW</td>
+      <td><div class="dbar"><div class="dbar-bg"><div class="dbar-f" style="width:${m.di*100}%;background:${c}"></div></div><span class="dbar-v" style="color:${c}">${m.di.toFixed(3)}</span></div></td>
+      <td><span class="rc ${rcls}"><span class="rdot"></span>${m.risk}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px">${m.ap}%</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:${hc}">${m.hs}%</td>
+    `;
+    tr.addEventListener('click',()=>showDetail(m.id));
+    document.getElementById('mtbody').appendChild(tr);
+  });
+}
+
+// ══ MOTOR DETAIL ════════════════════════════════════════════════
+let mChart=null;
+function showDetail(mid){
+  const m=M.find(x=>x.id===mid);if(!m)return;
+  document.querySelectorAll('#mtbody tr').forEach(r=>r.classList.remove('sel'));
+  document.querySelector(`#mtbody tr[data-id="${mid}"]`)?.classList.add('sel');
+  document.getElementById('d-title').textContent=`M${mid} — ${m.n}`;
+  const b=document.getElementById('d-badge');
+  b.textContent=m.risk;
+  b.className='tag '+(m.risk==='ÉLEVÉ'?'tag-rose':m.risk==='MODÉRÉ'?'tag-amb':'tag-emr');
+  const tc=m.t>60?'var(--c4)':m.t>45?'var(--c5)':'var(--c1)';
+  const vc=m.v>1?'var(--c5)':'var(--c1)';
+  const hc=m.hs>60?'var(--c3)':m.hs>40?'var(--c5)':'var(--c4)';
+  const rc=RC[m.risk];
+  document.getElementById('d-metrics').innerHTML=`
+    <div class="dmet"><div class="dmet-v" style="color:${tc}">${m.t}°C</div><div class="dmet-l">Température</div></div>
+    <div class="dmet"><div class="dmet-v" style="color:${vc}">${m.v.toFixed(3)}g</div><div class="dmet-l">Vibration</div></div>
+    <div class="dmet"><div class="dmet-v" style="color:var(--c1)">${m.c}A</div><div class="dmet-l">Courant</div></div>
+    <div class="dmet"><div class="dmet-v" style="color:${hc}">${m.hs}%</div><div class="dmet-l">Health</div></div>
+  `;
+  if(mChart)mChart.destroy();
+  const dd=DIEVOL[mid]||Array(10).fill(m.di);
+  mChart=new Chart(document.getElementById('c-mdi'),{
+    type:'line',
+    data:{labels:dd.map((_,i)=>`S${i+1}`),
+      datasets:[{data:dd,borderColor:rc,backgroundColor:rc+'18',borderWidth:2.5,fill:true,tension:.4,pointRadius:2,pointHoverRadius:5,pointBackgroundColor:rc}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{...TTP,callbacks:{label:c=>`DI: ${c.parsed.y.toFixed(4)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#475569',font:{size:8}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#475569'},min:0,max:.8}}}
+  });
+  document.getElementById('d-extra').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="padding:10px;background:rgba(0,0,0,.25);border:1px solid var(--b1);border-radius:10px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${rc}">${m.di.toFixed(3)}</div>
+        <div style="font-size:8.5px;color:var(--tx3);letter-spacing:.1em">DI INDEX</div>
+      </div>
+      <div style="padding:10px;background:rgba(0,0,0,.25);border:1px solid var(--b1);border-radius:10px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--tx2)">${m.ap}%</div>
+        <div style="font-size:8.5px;color:var(--tx3);letter-spacing:.1em">% ALERTES</div>
+      </div>
+      <div style="padding:10px;background:rgba(0,0,0,.25);border:1px solid var(--b1);border-radius:10px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${BC[m.mfr]||'#fff'}">${m.mfr}</div>
+        <div style="font-size:8.5px;color:var(--tx3);letter-spacing:.1em">FABRICANT</div>
+      </div>
+      <div style="padding:10px;background:rgba(0,0,0,.25);border:1px solid var(--b1);border-radius:10px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--c1)">${m.pw} kW</div>
+        <div style="font-size:8.5px;color:var(--tx3);letter-spacing:.1em">PUISSANCE</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('d-empty').style.display='none';
+  document.getElementById('d-body').style.display='block';
+}
+
+// ══ ALERT FEED ══════════════════════════════════════════════════
+function buildAlerts(){
+  const data=[
+    {mid:21,risk:'ÉLEVÉ', icon:'🌡️',msg:'DI=0.568 — Température structurelle 74°C — Intervention ≤7 jours',param:'TEMPERATURE',t:'26/05 15:32'},
+    {mid:5, risk:'ÉLEVÉ', icon:'📳',msg:'DI=0.623 — Vibrations élevées + anomalies — Inspection urgente',param:'VIBRATION',t:'24/05 16:45'},
+    {mid:18,risk:'MODÉRÉ',icon:'⚡',msg:'DI=0.405 — 44.8% alertes courant — Inspection mensuelle',param:'COURANT',t:'24/05 16:45'},
+    {mid:4, risk:'MODÉRÉ',icon:'📳',msg:'DI=0.386 — Tendance dégradation croissante — Surveiller',param:'VIBRATION',t:'24/05 16:45'},
+    {mid:15,risk:'MODÉRÉ',icon:'📳',msg:'DI=0.305 — 31% alertes — Vérifier roulements',param:'VIBRATION',t:'24/05 16:45'},
+    {mid:20,risk:'FAIBLE',icon:'⚡',msg:'53% alertes step3 — Seuil courant 8A trop bas — Recalibrer',param:'COURANT',t:'24/05 16:45'},
+    {mid:12,risk:'FAIBLE',icon:'⚡',msg:'45.6% alertes — DI=0.15 — Faux positifs probables',param:'COURANT',t:'24/05 16:45'},
+    {mid:17,risk:'FAIBLE',icon:'⚡',msg:'44.9% alertes — DI=0.031 — Seuil à réviser',param:'COURANT',t:'24/05 16:45'},
+  ];
+  const f=document.getElementById('afeed');
+  data.forEach((a,i)=>{
+    const c=RC[a.risk];
+    f.innerHTML+=`<div class="aitem" style="animation-delay:${i*.06}s">
+      <div class="adot-wrap"><div class="adot" style="background:${c};box-shadow:0 0 8px ${c}88"></div><div class="aline"></div></div>
+      <div style="flex:1">
+        <div class="atitle">${a.icon} Moteur ${a.mid} — <span style="color:${c}">${a.risk}</span></div>
+        <div style="font-size:11px;color:var(--txt);margin:3px 0 2px;line-height:1.5">${a.msg}</div>
+        <div class="ameta">${a.t} · ${a.param}</div>
+      </div>
+    </div>`;
+  });
+}
+
+// ══ PIPELINE ════════════════════════════════════════════════════
+function buildPipeline(){
+  const steps=[
+    {n:'01',t:'Extraction SQL',d:'motor_measurements · motors · alert_configurations',c:'#38bdf8'},
+    {n:'02',t:'Feature Engineering',d:'23 features · FFT · Hilbert · Rolling stats · Health score',c:'#34d399'},
+    {n:'03',t:'Détection Anomalies',d:'Hybrid IF+Rules V2 · AUC=0.9544 · Fleet Analysis',c:'#fbbf24'},
+    {n:'04',t:'RUL Prediction',d:'Dégradation index · 4 niveaux de risque · Tendance polynomiale',c:'#fb7185'},
+    {n:'05',t:'Rapport & Déploiement',d:'23 figures · CSV · MQTT IoT temps réel · Dashboard HTML',c:'#a78bfa'},
+  ];
+  document.getElementById('pipeline-body').innerHTML=steps.map(s=>`
+    <div class="pstep">
+      <div class="pn" style="background:${s.c}18;color:${s.c};border:1px solid ${s.c}40">${s.n}</div>
+      <div><div class="pt" style="color:${s.c}">${s.t}</div><div class="pd">${s.d}</div></div>
+    </div>`).join('');
+}
+
+// ══ NAV ═════════════════════════════════════════════════════════
+function go(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  el.classList.add('on');
+}
+
+// ══ INIT ════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  buildCharts();
+  buildTable();
+  buildAlerts();
+  buildPipeline();
+  setTimeout(()=>showDetail(21),250);
+});
+</script>
+</body>
+</html>

@@ -94,3 +94,99 @@
   🟢 Moteur 20 | DI=0.130 | RUL=  >90j | FAIBLE
 ============================================================
 
+============================================================
+  RAPPORT MISE À JOUR — 24/02/2026 02:38:20
+  Fichier SQL     : ai_cp_juin2025_test.sql
+  Nouvelles lignes: 59,409
+  Total historique: 92,219
+  Durée           : 81.9s
+
+  ÉTAT DES MOTEURS :
+----------------------------------------
+  🔴 Moteur  5 | DI=1.000 | RUL=  >90j | CRITIQUE
+  🔴 Moteur 18 | DI=0.972 | RUL=  >90j | CRITIQUE
+  🟠 Moteur 21 | DI=0.562 | RUL=  >90j | ÉLEVÉ
+  🟠 Moteur 16 | DI=0.574 | RUL=  >90j | ÉLEVÉ
+  🟢 Moteur  4 | DI=0.074 | RUL=  >90j | FAIBLE
+  🟢 Moteur  6 | DI=0.133 | RUL=  >90j | FAIBLE
+  🟢 Moteur  3 | DI=0.068 | RUL=  >90j | FAIBLE
+  🟢 Moteur  1 | DI=0.017 | RUL=  >90j | FAIBLE
+  🟢 Moteur  8 | DI=0.143 | RUL=  >90j | FAIBLE
+  🟢 Moteur  9 | DI=0.048 | RUL=  >90j | FAIBLE
+  🟢 Moteur 11 | DI=0.032 | RUL=  >90j | FAIBLE
+  🟢 Moteur 10 | DI=0.016 | RUL=  >90j | FAIBLE
+  🟢 Moteur 12 | DI=0.060 | RUL=  >90j | FAIBLE
+  🟢 Moteur 13 | DI=0.038 | RUL=  >90j | FAIBLE
+  🟢 Moteur  7 | DI=0.016 | RUL=  >90j | FAIBLE
+  🟢 Moteur  2 | DI=0.108 | RUL=  >90j | FAIBLE
+  🟢 Moteur 15 | DI=0.010 | RUL=  >90j | FAIBLE
+  🟢 Moteur 14 | DI=0.034 | RUL=  >90j | FAIBLE
+  🟢 Moteur 19 | DI=0.033 | RUL=  >90j | FAIBLE
+  🟢 Moteur 17 | DI=0.085 | RUL=  >90j | FAIBLE
+  🟢 Moteur 20 | DI=0.090 | RUL=  >90j | FAIBLE
+============================================================
+
+============================================================
+  RAPPORT MISE À JOUR — 24/02/2026 03:04:21
+  Fichier SQL     : ai_cp (2).sql
+  Nouvelles lignes: 32,810
+  Total historique: 92,219
+  Durée           : 55.4s
+
+  ÉTAT DES MOTEURS :
+----------------------------------------
+  🔴 Moteur  5 | DI=1.000 | RUL=  >90j | CRITIQUE
+  🔴 Moteur 18 | DI=0.972 | RUL=  >90j | CRITIQUE
+  🟠 Moteur 21 | DI=0.562 | RUL=  >90j | ÉLEVÉ
+  🟠 Moteur 16 | DI=0.574 | RUL=  >90j | ÉLEVÉ
+  🟢 Moteur  4 | DI=0.074 | RUL=  >90j | FAIBLE
+  🟢 Moteur  6 | DI=0.133 | RUL=  >90j | FAIBLE
+  🟢 Moteur  3 | DI=0.068 | RUL=  >90j | FAIBLE
+  🟢 Moteur  1 | DI=0.017 | RUL=  >90j | FAIBLE
+  🟢 Moteur  8 | DI=0.143 | RUL=  >90j | FAIBLE
+  🟢 Moteur  9 | DI=0.048 | RUL=  >90j | FAIBLE
+  🟢 Moteur 11 | DI=0.032 | RUL=  >90j | FAIBLE
+  🟢 Moteur 10 | DI=0.016 | RUL=  >90j | FAIBLE
+  🟢 Moteur 12 | DI=0.060 | RUL=  >90j | FAIBLE
+  🟢 Moteur 13 | DI=0.038 | RUL=  >90j | FAIBLE
+  🟢 Moteur  7 | DI=0.016 | RUL=  >90j | FAIBLE
+  🟢 Moteur  2 | DI=0.108 | RUL=  >90j | FAIBLE
+  🟢 Moteur 15 | DI=0.010 | RUL=  >90j | FAIBLE
+  🟢 Moteur 14 | DI=0.034 | RUL=  >90j | FAIBLE
+  🟢 Moteur 19 | DI=0.033 | RUL=  >90j | FAIBLE
+  🟢 Moteur 17 | DI=0.085 | RUL=  >90j | FAIBLE
+  🟢 Moteur 20 | DI=0.090 | RUL=  >90j | FAIBLE
+============================================================
+
+============================================================
+  RAPPORT MISE À JOUR — 01/03/2026 02:55:09
+  Fichier SQL     : ai_cp (2).sql
+  Nouvelles lignes: 32,810
+  Total historique: 32,810
+  Durée           : 38.5s
+
+  ÉTAT DES MOTEURS :
+----------------------------------------
+  🟠 Moteur  5 | DI=0.623 | RUL=  >90j | ÉLEVÉ
+  🟠 Moteur 21 | DI=0.568 | RUL=  >90j | ÉLEVÉ
+  🟡 Moteur 15 | DI=0.305 | RUL=  >90j | MODÉRÉ
+  🟡 Moteur  4 | DI=0.386 | RUL=  >90j | MODÉRÉ
+  🟡 Moteur 18 | DI=0.405 | RUL=  >90j | MODÉRÉ
+  🟢 Moteur  6 | DI=0.046 | RUL=  >90j | FAIBLE
+  🟢 Moteur  3 | DI=0.190 | RUL=  >90j | FAIBLE
+  🟢 Moteur  2 | DI=0.146 | RUL=  >90j | FAIBLE
+  🟢 Moteur  8 | DI=0.056 | RUL=  >90j | FAIBLE
+  🟢 Moteur  9 | DI=0.061 | RUL=  >90j | FAIBLE
+  🟢 Moteur 11 | DI=0.119 | RUL=  >90j | FAIBLE
+  🟢 Moteur 10 | DI=0.055 | RUL=  >90j | FAIBLE
+  🟢 Moteur 12 | DI=0.151 | RUL=  >90j | FAIBLE
+  🟢 Moteur 13 | DI=0.283 | RUL=  >90j | FAIBLE
+  🟢 Moteur  7 | DI=0.210 | RUL=  >90j | FAIBLE
+  🟢 Moteur  1 | DI=0.026 | RUL=  >90j | FAIBLE
+  🟢 Moteur 16 | DI=0.117 | RUL=  >90j | FAIBLE
+  🟢 Moteur 14 | DI=0.024 | RUL=  >90j | FAIBLE
+  🟢 Moteur 19 | DI=0.037 | RUL=  >90j | FAIBLE
+  🟢 Moteur 17 | DI=0.031 | RUL=  >90j | FAIBLE
+  🟢 Moteur 20 | DI=0.130 | RUL=  >90j | FAIBLE
+============================================================
+

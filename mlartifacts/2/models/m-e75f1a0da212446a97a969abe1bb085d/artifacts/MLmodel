@@ -1,0 +1,56 @@
+artifact_path: mlflow-artifacts:/2/models/m-e75f1a0da212446a97a969abe1bb085d/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.9
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.10.1
+model_id: m-e75f1a0da212446a97a969abe1bb085d
+model_size_bytes: 5776313
+model_uuid: m-e75f1a0da212446a97a969abe1bb085d
+prompts: null
+run_id: a45a4b6e00e84fa78072dd57c7e63626
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "temperature_exceed", "required": true}, {"type":
+    "double", "name": "courant_exceed", "required": true}, {"type": "double", "name":
+    "vibration_exceed", "required": true}, {"type": "double", "name": "acceleration_exceed",
+    "required": true}, {"type": "double", "name": "temperature_ratio", "required":
+    true}, {"type": "double", "name": "courant_ratio", "required": true}, {"type":
+    "double", "name": "vibration_ratio", "required": true}, {"type": "double", "name":
+    "acceleration_ratio", "required": true}, {"type": "double", "name": "n_exceed",
+    "required": true}, {"type": "double", "name": "severity_score", "required": true},
+    {"type": "double", "name": "vib_energy_mean", "required": true}, {"type": "double",
+    "name": "vib_kurt", "required": true}, {"type": "double", "name": "crest_factor",
+    "required": true}, {"type": "double", "name": "temp_mean", "required": true},
+    {"type": "double", "name": "temp_trend", "required": true}, {"type": "double",
+    "name": "courant_mean", "required": true}, {"type": "double", "name": "envelope_mean",
+    "required": true}, {"type": "double", "name": "health_score", "required": true},
+    {"type": "double", "name": "temp_ratio_flotte", "required": true}, {"type": "double",
+    "name": "vib_ratio_flotte", "required": true}, {"type": "double", "name": "courant_ratio_flotte",
+    "required": true}, {"type": "double", "name": "temp_zscore_flotte", "required":
+    true}, {"type": "double", "name": "vib_zscore_flotte", "required": true}, {"type":
+    "double", "name": "vib_rms", "required": true}, {"type": "double", "name": "vib_skewness",
+    "required": true}, {"type": "double", "name": "peak2peak", "required": true},
+    {"type": "double", "name": "spectral_entropy", "required": true}, {"type": "double",
+    "name": "shape_factor", "required": true}, {"type": "double", "name": "impulse_factor",
+    "required": true}]'
+  outputs: null
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-03-31 21:59:20.085117'

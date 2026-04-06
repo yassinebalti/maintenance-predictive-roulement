@@ -1,0 +1,101 @@
+# ══════════════════════════════════════════════════════════════════
+#  alert_rules.yml — Règles d'alerte Prometheus
+#  Maintenance Prédictive
+# ══════════════════════════════════════════════════════════════════
+
+groups:
+  - name: maintenance_predictive
+    interval: 30s
+    rules:
+
+      # ── Niveau de risque CRITIQUE ──────────────────
+      - alert: MoteurRisqueCritique
+        expr: ml_motor_risk_level >= 3
+        for: 2m
+        labels:
+          severity: critical
+          team: maintenance
+        annotations:
+          summary: "Moteur {{ $labels.motor_id }} en RISQUE CRITIQUE"
+          description: |
+            Le moteur {{ $labels.motor_id }} a un niveau de risque critique.
+            DI actuel : {{ $value }}
+            Action requise : Arrêt immédiat et inspection complète.
+
+      # ── Risque ÉLEVÉ ──────────────────────────────
+      - alert: MoteurRisqueEleve
+        expr: ml_motor_risk_level >= 2
+        for: 5m
+        labels:
+          severity: warning
+          team: maintenance
+        annotations:
+          summary: "Moteur {{ $labels.motor_id }} en risque ÉLEVÉ"
+          description: |
+            Le moteur {{ $labels.motor_id }} nécessite une intervention.
+            Planifier dans les 7 jours.
+
+      # ── DI dépasse seuil critique ─────────────────
+      - alert: DegradationCritique
+        expr: ml_motor_degradation_index > 0.75
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "DI critique sur Moteur {{ $labels.motor_id }}"
+          description: "DI = {{ $value | printf \"%.4f\" }} > 0.75"
+
+      # ── RUL inférieur à 7 jours ───────────────────
+      - alert: RULUrgent
+        expr: ml_motor_rul_days < 7 and ml_motor_rul_days > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "RUL URGENT Moteur {{ $labels.motor_id }}"
+          description: "RUL = {{ $value | printf \"%.1f\" }} jours — Action immédiate !"
+
+      # ── CUSUM alarme ──────────────────────────────
+      - alert: CUSUMRupture
+        expr: ml_motor_cusum_alarm == 1
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rupture CUSUM détectée — Moteur {{ $labels.motor_id }}"
+          description: |
+            Changement de tendance détecté sur le moteur {{ $labels.motor_id }}.
+            Surveiller l'évolution du DI.
+
+      # ── Température critique ─────────────────────
+      - alert: TemperatureCritique
+        expr: ml_motor_temperature > 70
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Température élevée — Moteur {{ $labels.motor_id }}"
+          description: "Température = {{ $value | printf \"%.1f\" }}°C > 70°C"
+
+      # ── Pipeline inactif ──────────────────────────
+      - alert: PipelineInactif
+        expr: rate(ml_pipeline_messages_processed[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+          team: ops
+        annotations:
+          summary: "Pipeline ML inactif — Aucun message traité"
+          description: |
+            Le consumer Kafka n'a traité aucun message depuis 5 minutes.
+            Vérifier : docker-compose logs consumer
+
+      # ── Exporter indisponible ─────────────────────
+      - alert: ExporterIndisponible
+        expr: up{job="ml-maintenance-pipeline"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Exporter Prometheus indisponible"
+          description: "Le service prometheus-exporter ne répond plus."

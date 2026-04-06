@@ -1,0 +1,40 @@
+# ╔═══════════════════════════════════════════════════╗
+# ║  Dockerfile — Pipeline ML (Producer + Consumer)   ║
+# ║  Python 3.11 + scikit-learn + kafka-python        ║
+# ╚═══════════════════════════════════════════════════╝
+
+FROM python:3.11-slim
+
+LABEL maintainer="PFE Maintenance Prédictive"
+LABEL description="Pipeline ML : Kafka Producer/Consumer + Feature Engineering V3"
+
+# Dépendances système
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copie et installation dépendances Python
+COPY docker/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copie du code
+COPY kafka/      /app/kafka/
+COPY docker/     /app/docker/
+
+# Dossiers de données
+RUN mkdir -p /app/data/stream_results /app/figures
+
+# Variables d'environnement
+ENV PYTHONUNBUFFERED=1
+ENV KAFKA_BOOTSTRAP=kafka:9093
+
+# Health check générique
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import kafka; print('ok')" || exit 1
+
+CMD ["python", "kafka/kafka_consumer.py"]
